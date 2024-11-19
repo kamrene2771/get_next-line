@@ -6,7 +6,7 @@
 /*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:39:33 by kamrene           #+#    #+#             */
-/*   Updated: 2024/11/19 04:42:47 by kamrene          ###   ########.fr       */
+/*   Updated: 2024/11/19 04:50:03 by kamrene          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (NULL);
 	cat = dest;
 	dest = concat(s1len, dest, s1);
-	dest = concat(s2len, dest, s2);
+	dest = concat(s2len, dest, (char *)s2);
 	*dest = '\0';
 	return (cat);
 }
@@ -76,6 +76,27 @@ int	count_nl(char *ptr,ssize_t readbytes)
 char	*copywithmod(char *src ,ssize_t readbytes)
 {
 	
+	char	*dst;
+	g_utils.j = count_nl(g_utils.ptr,g_utils.readbytes);
+	g_utils.nullter = (char *)malloc((readbytes + g_utils.j + 1)
+			* sizeof(char));
+	if (!g_utils.nullter)
+		return (NULL);
+	g_utils.nullter = ft_strjoin(g_utils.ptr,g_utils.nullter);
+	dst = g_utils.nullter;
+	while (*src)
+	{
+		*dst = *src;
+		if (*src == '\n')
+		{
+			*(++dst) = '\0';
+		}else{
+			dst++;
+		}
+		src++;
+	}
+	*dst = '\0';
+	return (g_utils.nullter);
 }
 
 void	read_alloc(int fd)
