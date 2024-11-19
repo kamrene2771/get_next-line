@@ -6,7 +6,7 @@
 /*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:39:36 by kamrene           #+#    #+#             */
-/*   Updated: 2024/11/19 04:32:54 by kamrene          ###   ########.fr       */
+/*   Updated: 2024/11/19 05:29:11 by kamrene          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,17 @@
 
 char	*get_next_line(int fd)
 {
-	char	*dst;
 
 	if (fd < 0)
 		return (NULL);
-	if (g_utils.i >= (g_utils.readbytes + g_utils.j))
-		 g_utils.nullter = NULL;
-	if (g_utils.nullter == NULL)
+	if (g_utils.toprint == NULL)
 	{
 		read_alloc(fd);
-		if (g_utils.readbytes <= 0)
-			return (NULL);
+		while (g_utils.readbytes > 0)
+			read_alloc(fd);
+		return (g_utils.toprint);
 	}
-	if(g_utils.nullter[0] == '\0')
-		return NULL;
-	dst = g_utils.nullter;
-	while (*g_utils.nullter)
-	{
-		g_utils.nullter++;
-		g_utils.i++;
-	}
-	g_utils.nullter++;
-	g_utils.i++;
-	return (dst);
+	return NULL;
 }
 int main(){
     char *str;
@@ -46,6 +34,10 @@ int main(){
     // }
 	str = get_next_line(fd);
 	printf("%s",str);
+	// str = get_next_line(fd);
+	// printf("%s",str);
+	// str = get_next_line(fd);
+	// printf("%s",str);
 	// str = get_next_line(fd);
 	// printf("%s",str);
 	 close(fd);

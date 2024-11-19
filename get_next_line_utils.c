@@ -6,7 +6,7 @@
 /*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:39:33 by kamrene           #+#    #+#             */
-/*   Updated: 2024/11/19 04:50:03 by kamrene          ###   ########.fr       */
+/*   Updated: 2024/11/19 05:21:21 by kamrene          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,8 @@ int	count_nl(char *ptr,ssize_t readbytes)
 
 char	*copywithmod(char *src ,ssize_t readbytes)
 {
-	
-	char	*dst;
-	g_utils.j = count_nl(g_utils.ptr,g_utils.readbytes);
-	g_utils.nullter = (char *)malloc((readbytes + g_utils.j + 1)
-			* sizeof(char));
-	if (!g_utils.nullter)
-		return (NULL);
-	g_utils.nullter = ft_strjoin(g_utils.ptr,g_utils.nullter);
+	char * dst;
+	g_utils.nullter = (char *)malloc((BUFFER_SIZE + count_nl(src,readbytes) + 1) * sizeof(char));
 	dst = g_utils.nullter;
 	while (*src)
 	{
@@ -96,13 +90,14 @@ char	*copywithmod(char *src ,ssize_t readbytes)
 		src++;
 	}
 	*dst = '\0';
-	return (g_utils.nullter);
+	g_utils.toprint = ft_strjoin(g_utils.toprint,g_utils.nullter);
+	return g_utils.toprint;
 }
 
 void	read_alloc(int fd)
 {
 	g_utils.i = 0;
-	g_utils.ptr = (char *)malloc((BUFFER_SIZE + 1 ) * sizeof(char));
+	g_utils.ptr = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!g_utils.ptr)
 		return;
 	g_utils.readbytes = read(fd, g_utils.ptr, BUFFER_SIZE);
@@ -115,7 +110,9 @@ void	read_alloc(int fd)
 		return;	
 	}
 	g_utils.ptr[g_utils.readbytes] = '\0';
-	g_utils.nullter = copywithmod(g_utils.ptr,g_utils.readbytes);
+	g_utils.toprint = copywithmod(g_utils.ptr,g_utils.readbytes);
 	free(g_utils.ptr);
 	g_utils.ptr = NULL;
+	free(g_utils.nullter);
+	g_utils.nullter = NULL;
 }
