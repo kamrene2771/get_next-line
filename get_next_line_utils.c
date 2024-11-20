@@ -6,7 +6,7 @@
 /*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:39:33 by kamrene           #+#    #+#             */
-/*   Updated: 2024/11/19 05:21:21 by kamrene          ###   ########.fr       */
+/*   Updated: 2024/11/20 08:12:45 by kamrene          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ size_t	ft_strlen(const char *str)
 	}
 	return (len);
 }
-char	*concat(size_t len, char *dest, char *s)
+char	*concat(char *dest, char *s)
 {
 	if (s)
-		while (len--)
+		while (*s)
 			*dest++ = *s++;
 	return (dest);
 }
@@ -53,66 +53,91 @@ char	*ft_strjoin(char *s1, char *s2)
 	if (dest == NULL)
 		return (NULL);
 	cat = dest;
-	dest = concat(s1len, dest, s1);
-	dest = concat(s2len, dest, (char *)s2);
+	dest = concat(dest, s1);
+	dest = concat(dest,	s2);
 	*dest = '\0';
 	return (cat);
 }
-int	count_nl(char *ptr,ssize_t readbytes)
+char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
-	int	count;
-	if (*ptr == '\n' && readbytes == 1)
-		return 0;
-	count = 0;
-	while (*ptr)
+	char	*dest;
+	char	*sub;
+	size_t	str_len;
+
+	if (s == NULL)
+		return (NULL);
+	str_len = ft_strlen(s);
+	if (str_len <= start)
+		len = 0;
+	else if (len > str_len - start)
+		len = str_len - start;
+	dest = (char *)malloc((len + 1) * sizeof(char));
+	if (dest == NULL)
+		return (NULL);
+	sub = dest;
+	s += start;
+	while (len)
 	{
-		if (*ptr == '\n')
+		*dest++ = *s++;
+		len--;
+	}
+	*dest = '\0';
+	return (sub);
+}
+int checknl(char *ptr){
+	int len = 0;
+	char *tofree = NULL;
+	int count=0;
+	while(*ptr){
+		len++;
+		if (*ptr == '\n'){
 			count++;
+			break;
+		}
 		ptr++;
 	}
-	return (count);
+	if(g_utils.readbytes > 0)
+		g_utils.temp = g_utils.ptr;
+	else
+		g_utils.ptr = g_utils.temp;
+	
+	if(count == 0)
+		return 0;
+		
+	tofree = g_utils.ptr;
+	g_utils.ptr = ft_substr(ptr,0,len);
+	if(tofree)
+		free(tofree);
+	g_utils.temp += len;
+	
+	
+	return count;
 }
-
-char	*copywithmod(char *src ,ssize_t readbytes)
+void freeptr()
 {
-	char * dst;
-	g_utils.nullter = (char *)malloc((BUFFER_SIZE + count_nl(src,readbytes) + 1) * sizeof(char));
-	dst = g_utils.nullter;
-	while (*src)
-	{
-		*dst = *src;
-		if (*src == '\n')
-		{
-			*(++dst) = '\0';
-		}else{
-			dst++;
-		}
-		src++;
-	}
-	*dst = '\0';
-	g_utils.toprint = ft_strjoin(g_utils.toprint,g_utils.nullter);
-	return g_utils.toprint;
+	free(g_utils.ptr);
+	g_utils.ptr = NULL;	
 }
-
 void	read_alloc(int fd)
 {
-	g_utils.i = 0;
+	char *temp;
 	g_utils.ptr = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
 	if (!g_utils.ptr)
 		return;
 	g_utils.readbytes = read(fd, g_utils.ptr, BUFFER_SIZE);
-	if (g_utils.readbytes <= 0 )
-	{
-		free(g_utils.ptr);
-		g_utils.ptr = NULL;
-		free(g_utils.nullter);
-		g_utils.nullter = NULL;
-		return;	
+	
+	if (g_utils.readbytes <= 0 && *g_utils.temp == '\0'){			
+		return freeptr();
 	}
 	g_utils.ptr[g_utils.readbytes] = '\0';
-	g_utils.toprint = copywithmod(g_utils.ptr,g_utils.readbytes);
-	free(g_utils.ptr);
-	g_utils.ptr = NULL;
-	free(g_utils.nullter);
-	g_utils.nullter = NULL;
+	if (checknl(g_utils.ptr) > 0)
+		g_utils.readbytes = 0;
+	temp = g_utils.takenull;
+	g_utils.takenull = ft_strjoin(g_utils.takenull,g_utils.ptr);
+	if (temp)
+        free(temp);
+	freeptr();
+	g_utils.toprint = g_utils.takenull;
+	if(!g_utils.takenull)
+		return ;
 }
