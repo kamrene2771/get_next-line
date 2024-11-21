@@ -26,6 +26,7 @@ int count_new_line(char *arr,int *len){
 	}
 	return count;
 }
+
 char *read_allocate(char *reading_buffer,char *printing_buffer,int fd)
 {
     static char *storage_buffer;
@@ -52,19 +53,22 @@ char *read_allocate(char *reading_buffer,char *printing_buffer,int fd)
 			return NULL;
 		}
 		reading_buffer[read_bytes] = '\0';
-
 		temp = storage_buffer;
 		storage_buffer = ft_strjoin(storage_buffer,reading_buffer);
 		free(temp);
 		free(reading_buffer);
-
-
 		if(count_new_line(storage_buffer,&len) > 0 || read_bytes == 0){
 			printing_buffer = check_newlines(storage_buffer,&old_len);
 			if (!printing_buffer)
 			{
 				free(storage_buffer);
+				free(printing_buffer);
+				printing_buffer = NULL;
 				storage_buffer = NULL;
+				reading_buffer = NULL;
+				len = 0;
+				old_len = 0;
+				return NULL;
 			}
 			break;
 		}
@@ -86,10 +90,17 @@ char *get_next_line(int fd)
     return printing_buffer;
 }
 
-int main(){
-    char *str;
-    int fd = open("multiple_line_no_nl",O_RDONLY);
-    while((str = get_next_line(fd)) != NULL){
-        printf("%s",str);
-    }
-}
+// int main(){
+//     char *str;
+//     int fd = open("9",O_RDONLY);
+// 	str = get_next_line(fd);
+// 	printf("%s",str);
+// 	str = get_next_line(fd);
+//  	printf("%s",str);
+// 	//close(fd);
+//  	fd = open("9-n",O_RDONLY);
+// 	str = get_next_line(fd);
+// 	printf("%s",str);
+// 	str = get_next_line(fd);
+//  	printf("%s",str);
+// }

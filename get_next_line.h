@@ -6,7 +6,7 @@
 /*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/17 05:39:30 by kamrene           #+#    #+#             */
-/*   Updated: 2024/11/21 08:14:26 by kamrene          ###   ########.fr       */
+/*   Updated: 2024/11/21 23:10:20 by kamrene          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 10
 # endif
-
 
 char		*get_next_line(int fd);
 char *read_allocate(char *reading_buffer,char *printing_buffer,int fd);
