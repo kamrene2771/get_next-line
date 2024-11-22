@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/22 05:08:07 by kamrene           #+#    #+#             */
+/*   Updated: 2024/11/22 05:08:18 by kamrene          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 size_t	ft_strlen(const char *str)
@@ -12,6 +24,7 @@ size_t	ft_strlen(const char *str)
 	}
 	return (len);
 }
+
 char	*concat(char *dest, char *s)
 {
 	if (s)
@@ -19,6 +32,7 @@ char	*concat(char *dest, char *s)
 			*dest++ = *s++;
 	return (dest);
 }
+
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {
 	char	*dest;
@@ -45,6 +59,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	*dest = '\0';
 	return (sub);
 }
+
 char	*ft_strjoin(char *s1, char *s2)
 {
 	size_t	s1len;
@@ -67,7 +82,20 @@ char	*ft_strjoin(char *s1, char *s2)
 		return (NULL);
 	cat = dest;
 	dest = concat(dest, s1);
-	dest = concat(dest,	s2);
+	dest = concat(dest, s2);
 	*dest = '\0';
 	return (cat);
+}
+
+char	*invalid_read(char *reading_buffer, char *storage_buffer,
+		ssize_t read_bytes)
+{
+	if (read_bytes < 0)
+	{
+		free(reading_buffer);
+		free(storage_buffer);
+		return (NULL);
+	}
+	reading_buffer[read_bytes] = '\0';
+	return (reading_buffer);
 }
