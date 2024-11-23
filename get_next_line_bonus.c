@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kamrene <kamrene@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/22 22:11:17 by kamrene           #+#    #+#             */
-/*   Updated: 2024/11/22 22:25:58 by kamrene          ###   ########.fr       */
+/*   Created: 2024/11/22 22:20:46 by kamrene           #+#    #+#             */
+/*   Updated: 2024/11/23 02:40:46 by kamrene          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
-char	*what_stays(char *storage_buffer)
+char	*stays(char *storage_buffer)
 {
 	int		i;
 	char	*temp;
@@ -72,44 +72,45 @@ char	*allocate(char *reading_buffer, ssize_t *read_bytes, int fd)
 	return (reading_buffer);
 }
 
-char	*store(char *reading_buffer, char *storage_buffer)
+char	*store(char *reading_buffer, t_fd_storage *fd_array, int fd)
 {
 	char	*temp;
 
-	temp = storage_buffer;
-	storage_buffer = ft_strjoin(storage_buffer, reading_buffer);
+	temp = fd_array[fd].s_b;
+	fd_array[fd].s_b = ft_strjoin(fd_array[fd].s_b,
+			reading_buffer);
 	free(temp);
 	free(reading_buffer);
-	if (!storage_buffer)
+	if (!fd_array[fd].s_b)
 		return (NULL);
-	return (storage_buffer);
+	return (fd_array[fd].s_b);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*storage_buffer;
-	char		*printing_buffer;
-	char		*reading_buffer;
-	ssize_t		read_bytes;
+	static t_fd_storage	fd_a[10000];
+	char				*r_b;
+	ssize_t				read_bytes;
+	char				*printing_buffer;
 
-	reading_buffer = NULL;
-	read_bytes = 0;
+	(1) && (r_b = NULL, read_bytes = 0);
+	if (fd < 0 || fd >= 10000 || BUFFER_SIZE <= 0)
+		return (NULL);
 	while (1)
 	{
-		reading_buffer = allocate(reading_buffer, &read_bytes, fd);
-		if (!reading_buffer)
-			return (free(storage_buffer), storage_buffer = NULL, NULL);
-		storage_buffer = store(reading_buffer, storage_buffer);
-		if (!storage_buffer)
+		r_b = allocate(r_b, &read_bytes, fd);
+		if (!r_b)
+			return (free(fd_a[fd].s_b), fd_a[fd].s_b = NULL, NULL);
+		fd_a[fd].s_b = store(r_b, fd_a, fd);
+		if (!fd_a[fd].s_b)
 			return (NULL);
-		if (count_newlines(storage_buffer) > 0 || read_bytes == 0)
+		if (count_newlines(fd_a[fd].s_b) > 0 || read_bytes == 0)
 		{
-			printing_buffer = process_text(storage_buffer);
-			if (!printing_buffer)
-				return (free(storage_buffer), storage_buffer = NULL, NULL);
-			storage_buffer = what_stays(storage_buffer);
-			break ;
+			printing_buffer = process_text(fd_a[fd].s_b);
+			fd_a[fd].s_b = stays(fd_a[fd].s_b);
+			if (read_bytes == 0 && !fd_a[fd].s_b)
+				(1) && (free(fd_a[fd].s_b), fd_a[fd].s_b = NULL);
+			return (printing_buffer);
 		}
 	}
-	return (printing_buffer);
 }
